@@ -1,0 +1,83 @@
+---
+title: "01_code-results-discussion"
+author: "Asilata"
+date: "May 2021"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+---
+
+This is a practice project on text analysis using `stm`. I'll be analysing J. P. Narayan's 1959 text, "A Plea for the Reconstruction of the Indian Polity".
+
+The source is an extract published on [Seminar](https://www.india-seminar.com) in 2001 which can be accessed [here](https://www.india-seminar.com/2001/506/506%20extract.html).
+
+Since it is an essay, I've "chunked" it into paragraphs through a complicated process involving **Word** for removing commas, colons, semi-colons, quotes, etc. Then I added double quotes to create paragraphs, copy-pasted the whole thing into **Notepad**, and then copy-pasted it again into a column in the recon.csv file. **Must find a better way to do it!**
+
+## Get started
+
+```{r setup, include=FALSE}
+rm(list=ls(all.names=TRUE))
+knitr::opts_chunk$set(eval=FALSE)
+```
+
+### Load Packages
+
+```{r load packages}
+library(stm)
+```
+
+### Load Data
+
+```{r load data}
+recon <- read.csv("data/recon.csv")
+names(recon)
+```
+
+## Preprocess data
+
+```{r preprocess}
+# Pre-process
+
+temp <- textProcessor(documents = recon$text, metadata = recon)
+meta <- temp$meta
+vocab <- temp$vocab
+docs <- temp$documents
+
+# prep documents in correct format
+out <- prepDocuments(docs, vocab, meta)
+docs <- out$documents
+vocab <- out$vocab
+meta <- out$meta
+```
+
+## Run a model
+
+We're excluding the `max.em.its = 15` argument from the end of the line of code (which keeps the iterations to a certain number, in this case, 15) to let the model reach convergence.
+
+```{r model}
+model <- stm(docs, vocab, 15, prevalence = ~ text, data = meta, seed = 15)
+```
+
+## Find Top Words using model
+
+```{r top words}
+# Top Words
+labelTopics(model)
+
+# Example Docs
+findThoughts(model, texts = meta$text, n=2,topics = 1:15)
+```
+
+## Analyse Topics
+
+**This is incomplete. Refer to Rochelle's code: 08-4_STM.Rmd**
+
+```{r analyse topics}
+# Corpus Summary
+plot.STM(model)
+
+# Estimate Covariate Effects
+prep <- estimateEffect(1:15 ~ text, model, meta = meta, documents=docs)
+
+```

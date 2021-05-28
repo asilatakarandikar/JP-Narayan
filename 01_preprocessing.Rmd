@@ -1,0 +1,27 @@
+---
+title: "01_preprocessing"
+author: "Asilata Karandikar"
+date: "28/05/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+```{r load packages}
+
+library(tm) # Framework for text mining
+library(tidyverse) # Data preparation and pipes $>$
+library(ggplot2) # for plotting word frequencies
+library(wordcloud) # wordclouds!
+```
+
+
+```{r}
+docs.df <-read.csv("recon.csv", header=TRUE) #read in CSV file
+docs.df <- docs.df %>%
+  mutate(text = str_conv(text, "UTF-8"))
+docs <- Corpus(VectorSource(docs.df$text))
+```
+
