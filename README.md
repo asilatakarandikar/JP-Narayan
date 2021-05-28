@@ -1,2 +1,3 @@
 # JP-Narayan
-Text analysis of JP Narayan's writings
+
+This is a practice text-as-data project. Trying out a bunch of text analysis tools on JP Narayan's writings.
